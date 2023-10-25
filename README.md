@@ -1,7 +1,7 @@
 # TL-Projet
 Projet de groupe de l'UE Transport-Logistique du M2 ORCO
 
-## Compte rendu de seances
+## Compte rendu des seances
 ## Seance 1
 25/10/2023
 
