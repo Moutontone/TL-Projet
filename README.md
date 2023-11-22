@@ -21,3 +21,5 @@ On peut montrer qu'il n'y aura qu'une seule boucle, pas de passage dans au hub.
 {On peut supposer que la capacité du camions Q permet de récupérer toutes les commande d'un fermier en 1 seule fois} -> finalement cette hypothese n'est peut etre pas necessaire.
 De toute facon on fait nos propres hypothese et on assume.
 Finalisation du modele pour le sénario 2. Il manque juste a lineariser les variables Ni
+
+## Seance 4
