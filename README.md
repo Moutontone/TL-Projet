@@ -22,4 +22,10 @@ On peut montrer qu'il n'y aura qu'une seule boucle, pas de passage dans au hub.
 De toute facon on fait nos propres hypothese et on assume.
 Finalisation du modele pour le sénario 2. Il manque juste a lineariser les variables Ni
 
+## Seance 3
+15/11/2023
+
+! TODO !
+
 ## Seance 4
+22/11/2023
