@@ -29,3 +29,6 @@ Finalisation du modele pour le sénario 2. Il manque juste a lineariser les vari
 
 ## Seance 4
 22/11/2023
+Utilisaton de la bibliotheque python : https://python-mip.readthedocs.io/en/latest/quickstart.html
+
+
