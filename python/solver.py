@@ -1,9 +1,12 @@
 from mip import *
+import sys
 import fileReader as fr
 from itertools import combinations
 
 # Replace with the data repository of your choice
-datapath = 'toydata'
+datapath = 'data'
+if len(sys.argv) > 1:
+  datapath = sys.argv[1]
 
 # Getting data from corresponding data folder
 nbClients, nbFarmers, capacity, locationCost, costPerKm = fr.readInfoInstanceFile(datapath+'/info_instance.txt')
@@ -27,7 +30,7 @@ for i in farmers:
   for k in clients:
     demandSums[i-1] += demands[day][k-nbFarmers-1][i-1]
   # to check feasibility of capacity constraint
-  #print('farmer {} has a total demand of {}'.format(i, demandSums[i-1]))
+  # print('farmer {} has a total demand of {}'.format(i, demandSums[i-1]))
 
 ####### Greedy Heuristic Solution: Shortest Path First ########
 
@@ -84,6 +87,7 @@ for t in tours:
     print('')
 """
 
+print('\nSolution to the greedy heuristic found (with {} tours)\n'.format(greedyTour))
 
 ################## MIP Model of the Problem ###################
 m = Model()
