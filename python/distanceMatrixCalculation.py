@@ -2,7 +2,7 @@ import sys
 import fileReader as fr
 import math
 
-datapath = 'data'
+datapath = 'newdata'
 if len(sys.argv) > 1:
   datapath = sys.argv[1]
 
