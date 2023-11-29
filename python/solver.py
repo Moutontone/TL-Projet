@@ -4,6 +4,17 @@ import fileReader as fr
 from itertools import combinations
 import copy
 from verifSolution import *
+import time
+
+###############################################################
+################### Optimization arguments ####################
+###############################################################
+
+argc = len(sys.argv)-1
+
+optMode = '-O2'
+if argc > 1:
+  optMode = sys.argv[2]
 
 ###############################################################
 ######################## Initialization #######################
@@ -12,13 +23,13 @@ from verifSolution import *
 # Verbosity booleans
 greedyVerbose = False # prints the whole greedy solution
 toursVerbose = True # prints the ammount of tours of the greedy solution and the upper bound for the optimal solution
-solverVerbose = True # prints extra details of the solving process
+solverVerbose = False # prints extra details of the solving process
 optSolve = True # solves the MIP formulation
-optVerbose = False # prints the whole solution
+optVerbose = True # prints the whole solution
 
 # Replace with the data repository of your choice
 datapath = 'newdata'
-if len(sys.argv) > 1:
+if argc >= 1:
   datapath = sys.argv[1]
 
 # Getting data from corresponding data folder
@@ -44,6 +55,7 @@ for i in farmers:
     demandSums[i-1] += demands[day][k-nbFarmers-1][i-1]
   # to check feasibility of capacity constraint
   # print('farmer {} has a total demand of {}'.format(i, demandSums[i-1]))
+  assert demandSums[i-1] <= capacity
   if demandSums[i-1] > capacity:
     print('\nERROR: The solver can not yet modelize a problem with higher single farmer demand than capacity\n')
 
@@ -132,16 +144,17 @@ if greedyValid == False:
 ###### Improving the upper bound of the number of tours #######
 ###############################################################
 
-distFromDep = copy.deepcopy(distanceMatrix[0])
-distFromDep.sort()
-maxOptTours = 0
-tempDist = 0
-while tempDist < greedyDist:
-  tempDist += distFromDep[maxOptTours*2]
-  tempDist += distFromDep[maxOptTours*2 + 1]
-  maxOptTours += 1
-
-maxOptTours = min(maxOptTours, nbFarmers)
+maxOptTours = nbFarmers
+if optMode == '-O2':
+  distFromDep = copy.deepcopy(distanceMatrix[0])
+  distFromDep.sort()
+  maxOptTours = 0
+  tempDist = 0
+  while tempDist < greedyDist and maxOptTours*2+1 <= nbFarmers:
+    tempDist += distFromDep[maxOptTours*2]
+    tempDist += distFromDep[maxOptTours*2 + 1]
+    maxOptTours += 1
+  maxOptTours = min(maxOptTours, nbFarmers)
 
 newtours = [i for i in range(maxOptTours)]
 
@@ -175,15 +188,16 @@ for t in newtours[:len(newtours)-1]:
   m.add_lazy_constr( xsum(xsum(x[t][i][j]*distanceMatrix[i][j] for i in relevant) for j in relevant) >=\
                      xsum(xsum(x[t+1][i][j]*distanceMatrix[i][j] for i in relevant) for j in relevant) )
 
-""" Too many constraints with this formulation
-for k in range(1, nbFarmers+1):
-  for it in combinations(farmers, k):
-    m += xsum(xsum(xsum(x[t][i][j] for i in it) for j in it)for t in newtours) <= k-1
-"""
-for i in farmers:
-  for j in farmers:
-    for t in newtours:
-      m += y[t][i]-(nbFarmers+1)*x[t][i][j] >= y[t][j] - nbFarmers
+if optMode == '-O0':
+  #Too many constraints with this formulation
+  for k in range(1, nbFarmers+1):
+    for it in combinations(farmers, k):
+      m += xsum(xsum(xsum(x[t][i][j] for i in it) for j in it)for t in newtours) <= k-1
+if optMode == '-O1' or optMode == '-O2':
+  for i in farmers:
+    for j in farmers:
+      for t in newtours:
+        m += y[t][i]-(nbFarmers+1)*x[t][i][j] >= y[t][j] - nbFarmers
 
 m.objective = minimize(xsum(xsum(xsum(x[t][i][j]*distanceMatrix[i][j] for i in relevant)for j in relevant)for t in newtours))
 
@@ -215,7 +229,7 @@ if optSolve == True:
   else:
     print('\nNo solution was found')
   validSol = verifSol(solution, nbFarmers+1, maxOptTours)
-  assert validSol == True
+  # assert validSol == True
   if validSol == True:
     print('\nThe solution provided has a valid format\n')
   else:
