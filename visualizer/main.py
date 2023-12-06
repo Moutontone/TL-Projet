@@ -60,9 +60,12 @@ def plot_path(path, ax, color):
 
 fig, ax = plt.subplots()
 
-plot_path(path_farmer, ax, "black")
-plot_path(path_client, ax, "blue")
-plot_locations(F, C, ax)
+def main():
+    plot_path(path_farmer, ax, "black")
+    plot_path(path_client, ax, "blue")
+    plot_locations(F, C, ax)
 
-plt.show()
+    plt.show()
 
+if __name__ == "__main__":
+    main()
