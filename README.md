@@ -31,7 +31,7 @@ Finalisation du modele pour le sénario 2. Il manque juste a lineariser les vari
 22/11/2023
 Utilisaton de la bibliotheque python : https://python-mip.readthedocs.io/en/latest/quickstart.html
 
-## Seance ?
+## Seance 5
 29/11/2023
 
 State of the project:
@@ -39,3 +39,5 @@ Senario 2 -> looking in the literatur to find modeles as close as possible to ou
 Senario 1 -> model found int the paper [ref]. We know how to use the solver and we are now tried the model.
 
 Goal: senario 2 find a modelisation. senario 1: ameliorer le code et mieux comprendre le solver. Thibk about fairnes
+
+Start the redaction of the Rapport on Overleaf. Starting finding definitions for fairness.
