@@ -65,6 +65,7 @@ def main():
     plot_path(path_client, ax, "blue")
     plot_locations(F, C, ax)
 
+    plt.axis('off')
     plt.show()
 
 if __name__ == "__main__":
