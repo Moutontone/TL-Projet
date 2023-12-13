@@ -1,4 +1,4 @@
-import python.fileReader as fr
+import fileReader as fr
 
 class Instance():
     def __init__(self, datapath) -> None:
@@ -11,7 +11,7 @@ class Instance():
         self.farmers = [i for i in range(1,self.nbFarmers+1)]
         self.clients = [i for i in range(self.nbFarmers+1,self.nbFarmers+self.nbClients+1)]
         # self.tours = [t for t in range(self.nbFarmers)]
-        self.relevant = [i for i in range(self.nbFarmers+1)] #all nodes treated during a stage of the scenario 
+        self.relevant = [i for i in range(self.nbFarmers+1)]
         self.demands = self.demands[1:]#first line is empty
         self.day(0)
 
@@ -53,8 +53,8 @@ class Instance():
     def sum_demand_client(self, i):
         return self.demandSumsClient[i-1]
     
-    def client_predecesors(self, i):
+    def clientPredecesors(self, i):
         return self.clientPredecesors[i]
     
-    def farmer_successors(self, i):
+    def farmerSuccessors(self, i):
         return self.farmerSuccessors[i]
