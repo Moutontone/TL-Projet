@@ -1,6 +1,6 @@
 farmers 21
 clients 39
-capacity 1000
+capacity 5000
 locationCost 10000
 costPerKm 3.5
 nbOfDates 208
