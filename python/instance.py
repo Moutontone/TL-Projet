@@ -13,33 +13,8 @@ class Instance():
         # self.tours = [t for t in range(self.nbFarmers)]
         self.relevant = [i for i in range(self.nbFarmers+1)]
         self.demands = self.demands[1:]#first line is empty
-        self.day = 0
+        self.day(0)
 
-        # sum of all demands for farmer i (we supppose that we take everything at once from a farmer)
-        self.demandSumsFarmer = [0 for i in self.farmers]
-        self.demandSumsClient = [0 for i in self.clients]
-        self.clientPredecesors = {}
-        self.farmerSuccessors = {}
-        for i in self.farmers:
-            for k in self.clients:
-                self.demandSumsFarmer[i-1] += self.demands[self.day][k-self.nbFarmers-1][i-1]
-                self.demandSumsClient[k-self.nbFarmers-1] += self.demands[self.day][k-self.nbFarmers-1][i-1]
-                if self.demands[self.day][k-self.nbFarmers-1][i-1]>0:
-                    if k not in self.clientPredecesors.keys():
-                        self.clientPredecesors[k] = [i]
-                    else:
-                        self.clientPredecesors[k].append(i)
-                    if i not in self.farmerSuccessors.keys():
-                        self.farmerSuccessors[i] = [k]
-                    else:
-                        self.farmerSuccessors[i].append(k)
-            # to check feasibility of capacity constraint
-            # print('farmer {} has a total demand of {}'.format(i, demandSums[i-1]))
-            assert self.demandSumsFarmer[i-1] <= self.capacity
-            assert self.demandSumsClient[i-1] <= self.capacity
-            
-            if self.demandSumsFarmer[i-1] > self.capacity or self.demandSumsClient[i-1] > self.capacity:
-                print('\nERROR: The solver can not yet modelize a problem with higher single farmer demand than capacity\n')
 
 
     def day(self, k):
