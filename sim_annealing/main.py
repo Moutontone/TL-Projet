@@ -4,6 +4,7 @@ import random as rdm
 from math import exp
 
 class Instance():
+
     def __init__(self, datapath) -> None:
         self.nbClients, self.nbFarmers, self.capacity, self.ocationCost, self.costPerKm = fr.readInfoInstanceFile(datapath+'/info_instance.txt')
         self.coordinates = fr.readCoordFile(datapath+'/coordinates.txt')# for each point we have list of 2 values [x, y] size=(60,2) first depot, next farmers, next clients
@@ -16,27 +17,39 @@ class Instance():
         # self.tours = [t for t in range(self.nbFarmers)]
         self.relevant = [i for i in range(self.nbFarmers+1)]
         self.demands = self.demands[1:]#first line is empty
-        self.day = 0
+
+        self.day(0)
+
+
+
+    def day(self, d):
+        self.day = d
 
         # sum of all demands for farmer i (we supppose that we take everything at once from a farmer)
-        self.demandSums = [0 for i in self.farmers]
+        self.sum_demand_farmers = [0 for _ in self.farmers]
         for i in self.farmers:
             for k in self.clients:
-                self.demandSums[i-1] += self.demands[self.day][k-self.nbFarmers-1][i-1]
+                self.sum_demand_farmers[i-1] += self.demands[self.day][k-self.nbFarmers-1][i-1]
             # to check feasibility of capacity constraint
             # print('farmer {} has a total demand of {}'.format(i, demandSums[i-1]))
-            assert self.demandSums[i-1] <= self.capacity
-            if self.demandSums[i-1] > self.capacity:
+            assert self.sum_demand_farmers[i-1] <= self.capacity
+            if self.sum_demand_farmers[i-1] > self.capacity:
                 print('\nERROR: The solver can not yet modelize a problem with higher single farmer demand than capacity\n')
+
+        self.sum_demand_clients = [0 for _ in self.clients]
+        for i in self.clients:
+            for k in self.farmers:
+                self.sum_demand_clients[i - 1 - self.nbFarmers] += self.demands[self.day][i - 1 - self.nbFarmers][k-1]
+
 
     def dist(self, i, j):
         return self.distanceMatrix[i][j]
 
     def sum_demand_farmer(self, i):
-        return self.demandSums[i-1]
+        return self.sum_demand_farmers[i-1]
         
 
-class Solution():
+class Solution1():
 
     empty = True
     val = None
@@ -48,6 +61,7 @@ class Solution():
         self.sol = [k for k in inst.farmers]
         rdm.shuffle(self.sol)
         self.empty = False
+        self.evaluate()
 
     def evaluate(self):
         if self.empty:
@@ -70,6 +84,14 @@ class Solution():
             last_loc = f
         self.dist = dist
 
+    def generate_neighbor(self):
+        i,j = rdm.sample(range(len(self.sol)), 2)
+        neighbor = self.copy()
+        neighbor.swap(i, j)
+        neighbor.evaluate()
+        return neighbor
+        pass
+
     def generate_neighbors(self):
         neighbors = []
         # Iterate through each index in the solution
@@ -85,7 +107,7 @@ class Solution():
         self.sol[i], self.sol[j] = self.sol[j], self.sol[i]
 
     def copy(self):
-        new = Solution(self.inst)
+        new = Solution1(self.inst)
         new.empty = self.empty
         new.val = self.val
         new.dist = self.dist 
@@ -95,48 +117,58 @@ class Solution():
     def __str__(self) -> str:
         return str(self.dist) + " " + self.sol.__str__() 
 
+"""
+    Simulated annealing
+"""
 
-def simulated_annealing(inst):
-    sol = Solution(inst)
-    sol.initialize()
-    sol.evaluate()
-    print(f"starting simulated annealing")
+def simulated_annealing(sol, max_iteration, temperature_initial):
+    # init parameters
     iteration = 0
-    T = 1000
-    val = [sol.dist]
-    max_iteration = 1000
-    while(iteration < max_iteration ):
-        print(f"sol: {sol}\nT: {T}, iteration {iteration}")
+    temperature = temperature_initial
+    history = [sol.dist]
+    # main loop
+    while(iteration < max_iteration):
+        neighbor = sol.generate_neighbor()
+        if proba_accept(temperature, neighbor.dist, sol.dist) > rdm.random():
+            sol = neighbor
+        # update parameters
         iteration += 1
-        T = T * 0.95
-        neighbors = sol.generate_neighbors() 
-        candidate_sol = rdm.choice(neighbors)
-        candidate_sol.evaluate()
-        if proba_accept(T, candidate_sol.dist, sol.dist) > rdm.random():
-            sol = candidate_sol
-        val.append(sol.dist)
-    return val
+        temperature = cooling(temperature)
+        history.append(sol.dist)
+    return history
+
 def proba_accept(T, candidat, sol):
     if candidat < sol:
         return 1.
     return exp((sol - candidat) / T)
 
+def cooling(t):
+    return t * 0.95
+
+
+"""
+    Main 
+"""
 if __name__ == "__main__":
+    rdm.seed()
     inst = Instance("../data")
-    val = simulated_annealing(inst)
-    print("end of simulated annealing")
+    sol = Solution1(inst)
+    sol.initialize()
+    max_iterations = 1000
+    t0 = 1000
+    values = simulated_annealing(sol, max_iterations, t0)
     # plot
-    Ys = val
+    Ys = values
     plt.plot(Ys)
     plt.ylim(0, max(Ys) * 1.1)
     plt.show()
 
+    print(f"result: {values[-1]}")
+
 
 """
-todo and optimizations:
+todo and optimizations
     do better code.
-    generate neighbors one by one as needed
-    abstract a bit more the simulated annealing
     verify how good it is. make some test
-    do versino for other pbs
+    do version for other pbs
 """
