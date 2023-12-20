@@ -24,9 +24,9 @@ color_clients = "green"
 
 # functions
 
-def plot_locations(farmers, clients, ax):
+def plot_locations(farmers, clients, depot, ax):
     # plot Depot
-    ax.scatter(0,0, marker = mark_depot, color = color_depot, sizes=[size_depot])
+    ax.scatter(depot[0],depot[1], marker = mark_depot, color = color_depot, sizes=[size_depot])
 
     # plot Farmers
     X, Y = [], []
@@ -44,12 +44,10 @@ def plot_locations(farmers, clients, ax):
 
 # plot path
 def plot_path(path, ax, color):
-    X, Y = [0], [0]
+    X, Y = [], []
     for x, y in path:
         X.append(x)
         Y.append(y)
-    X.append(0)
-    Y.append(0)
     ax.plot(X,Y, color = color, zorder=-1)
     for i in range(1, len(X)):
         x = X[i - 1]
@@ -63,7 +61,7 @@ def main():
     fig, ax = plt.subplots()
     plot_path(path_farmer, ax, "black")
     plot_path(path_client, ax, "blue")
-    plot_locations(F, C, ax)
+    plot_locations(F, C, D, ax)
 
     plt.axis('off')
     plt.show()

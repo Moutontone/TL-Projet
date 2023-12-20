@@ -31,4 +31,4 @@ def simulated_annealing(solution_initial, max_iteration, temperature_initial, pr
         iteration += 1
         temperature = cooling_fn(temperature)
         cost_history.append(sol.cost)
-    return cost_history
+    return sol, cost_history

@@ -81,4 +81,7 @@ class Instance():
         return self.farmerSuccessors[i]
     
     def getCoordinates(self):
-        return [(self.coordinates[x][0],self.coordinates[x][1]) for x in self.farmers], [(self.coordinates[x][0],self.coordinates[x][1]) for x in self.clients], (self.coordinates[0][0], self.coordinates[0][1])
+        return [(self.coordinates[x][0], self.coordinates[x][1]) for x in self.farmers], [(self.coordinates[x][0], self.coordinates[x][1]) for x in self.clients], (self.coordinates[0][0], self.coordinates[0][1])
+
+    def getCoordinate(self, i):
+        return (self.coordinates[i][0], self.coordinates[i][1])
