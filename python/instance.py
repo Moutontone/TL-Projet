@@ -70,7 +70,15 @@ class Instance():
 
     def command_farmer(self, k):
         return self.commandList[k][0]
+
     def command_client(self, k):
         return self.commandList[k][1]
+
     def command_quantity(self, k):
         return self.commandList[k][2]
+
+    def farmerSuccessors(self, i):
+        return self.farmerSuccessors[i]
+    
+    def getCoordinates(self):
+        return [(self.coordinates[x][0],self.coordinates[x][1]) for x in self.farmers], [(self.coordinates[x][0],self.coordinates[x][1]) for x in self.clients], (self.coordinates[0][0], self.coordinates[0][1])
