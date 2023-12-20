@@ -21,6 +21,7 @@ class Instance():
         self.demandSumsClient = [0 for _ in self.clients]
         self.clientPredecesors = [[] for _ in self.clients]
         self.farmerSuccessors = [[] for _ in self.farmers]
+        self.demandsFarmersClients = []
         # list of triplet (farmer, client, quantity)
         self.commandList = []
         for f in self.farmers:
@@ -31,6 +32,7 @@ class Instance():
                 # update successors and predecessors
                 q = self.demands[self.day][c-self.nbFarmers-1][f-1]
                 if q > 0:
+                    self.demandsFarmersClients.append([f,c])
                     if c not in self.farmerSuccessors[f-1]:
                         self.farmerSuccessors[f-1].append(c)
                     if f not in self.clientPredecesors[c-self.nbFarmers-1]:
