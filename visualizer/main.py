@@ -42,6 +42,8 @@ def plot_locations(farmers, clients, depot, ax):
         Y.append(fy)
     ax.scatter(X,Y, marker = mark_clients, color = color_clients, sizes=[size]*len(X))
 
+    return ax
+
 # plot path
 def plot_path(path, ax, color):
     X, Y = [], []
@@ -54,7 +56,8 @@ def plot_path(path, ax, color):
         y = Y[i - 1]
         dx = (X[i - 1] + X[i])/2 - x
         dy = (Y[i - 1] + Y[i])/2 - y
-        plt.arrow(x, y, dx, dy, shape='full', lw=0, color = color, length_includes_head=True, head_width=.15)
+        ax.arrow(x, y, dx, dy, shape='full', lw=0, color = color, length_includes_head=True, head_width=.15)
+    return ax
 
 
 def main():

@@ -5,6 +5,10 @@ from python.instance import Instance
 import python.annealing as sim
 import matplotlib.pyplot as plt
 import random as rdm
+import visualizer.main as viz
+
+import matplotlib.animation as animation
+
 
 class Solution_general():
     def __init__(self, inst) -> None:
@@ -79,7 +83,16 @@ class Solution_general():
     def __str__(self) -> str:
         return str(self.cost) + " " + self.sol.__str__() 
 
-
+    def list_locations(self):
+        locations = [0]
+        for command, type in self.sol:
+            if type == 0:
+                destination = self.inst.command_farmer(command)
+            else:
+                destination = self.inst.command_client(command)
+            locations.append(destination)
+        locations.append(0)
+        return locations
 
 class Solution():
 
@@ -168,15 +181,70 @@ class Solution():
         return str(self.cost) + " " + self.sol.__str__() 
 
 
+def draw_path(sol, instance):
+    F, C, D = instance.getCoordinates()
+
+    path= []
+
+    for loc in sol.list_locations():
+        path.append(instance.getCoordinate(loc))
+
+    fig, ax = plt.subplots()
+    # plot farmer path
+    viz.plot_locations(F, C, D, ax)
+    viz.plot_path(path, ax, "black")
+    ###
+
+    plt.axis('off')
+    plt.show()
+
+def draw_animation(history, instance):
+    F, C, D = instance.getCoordinates()
+    fig, ax = plt.subplots()
+    viz.plot_locations(F, C, D, ax)
+
+    lines = []
+    def update(frame):
+        sol = history[frame]
+        # clear lines
+        global line_path
+        if len(lines) > 0:
+            for l in lines[-1]:
+                l.remove()
+        # update path
+        path= []
+        for loc in sol.list_locations():
+            path.append(instance.getCoordinate(loc))
+        X, Y = [], []
+        for x, y in path:
+            X.append(x)
+            Y.append(y)
+        line_path = ax.plot(X,Y, color = "black", zorder=-1)
+        lines.append(line_path)
+        return line_path
+
+
+    ani = animation.FuncAnimation(fig=fig, func=update, frames=len(history), interval=25)
+    plt.show()
+
+
 if __name__ == "__main__":
     rdm.seed()
     inst = Instance("data")
+    inst = Instance("smalldata")
     sol = Solution_general(inst)
     sol.initialize()
-    max_iterations = 50_000
+    max_iterations = 10_000
     t0 = 1000
-    values = sim.simulated_annealing(sol, max_iterations, t0)
+    history = sim.simulated_annealing(sol, max_iterations, t0)
+    sol = history[-1]
+    values = [s.cost for s in history]
+
     # plot
+    # draw_path(sol,inst)
+    print("start annimation")
+    draw_animation(history, inst)
+    exit()
     Ys = values
     plt.plot(Ys)
     plt.ylim(0, max(Ys) * 1.1)

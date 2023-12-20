@@ -21,7 +21,7 @@ def simulated_annealing(solution_initial, max_iteration, temperature_initial, pr
     iteration = 0
     temperature = temperature_initial
     sol = solution_initial
-    cost_history = [sol.cost]
+    history = [sol]
     # main loop
     while(iteration < max_iteration):
         neighbor = sol.generate_neighbor()
@@ -30,5 +30,5 @@ def simulated_annealing(solution_initial, max_iteration, temperature_initial, pr
         # update parameters
         iteration += 1
         temperature = cooling_fn(temperature)
-        cost_history.append(sol.cost)
-    return sol, cost_history
+        history.append(sol)
+    return history

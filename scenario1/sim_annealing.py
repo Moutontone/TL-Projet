@@ -212,7 +212,9 @@ if __name__ == "__main__":
     max_iterations = 10000
     t0 = 9000
     print(f"find best route for Farmers using simulated annealing...")
-    best_solF, valuesF = sim.simulated_annealing(sol, max_iterations, t0)
+    history = sim.simulated_annealing(sol, max_iterations, t0)
+    valuesF = [s.cost for s in history]
+    best_solF = history[-1]
     print(f"found route of cost: {valuesF[-1]}")
 
     # find best solution for client
@@ -221,7 +223,9 @@ if __name__ == "__main__":
     max_iterations = 10000
     t0 = 9000
     print(f"find best route for Client using simulated annealing...")
-    best_solC, valuesC = sim.simulated_annealing(sol, max_iterations, t0)
+    history = sim.simulated_annealing(sol, max_iterations, t0)
+    valuesC = [s.cost for s in history]
+    best_solC = history[-1]
     print(f"found route of cost: {valuesC[-1]}")
 
     # plot
