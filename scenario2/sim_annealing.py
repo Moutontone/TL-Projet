@@ -200,24 +200,31 @@ def draw_path(sol, instance):
 
 def draw_animation(history, instance, iterations):
     F, C, D = instance.getCoordinates()
-    fig, ax = plt.subplots()
-    viz.plot_locations(F, C, D, ax)
-    plt.plot([], [], label = "init")
-    hlegend = ax.legend(loc='upper right')
+    fig, (ax1, ax2) = plt.subplots(2)
+    viz.plot_locations(F, C, D, ax1)
 
-    # update path
+
     X, Y = [], []
-    line_path = ax.plot(X,Y, color = "black", zorder=-1, label = "init0")
+    line_path = ax1.plot(X,Y, color = "black", zorder=-1, label = "iteration 0")
+    X = [i for i in range(len(history))]
+    Y = [sol.cost for sol in history]
+    ax2.plot(X,Y, color = "black")
+    line_cost = ax2.plot([],[], color = "red", label = "iteration0")
+    hlegend = ax2.legend(loc='upper right')
 
-    lines = []
+    lines1 = []
+    lines2 = []
     def update(frame):
+        frame = min(frame*10, len(history)-1)
         sol = history[frame]
         # update legend
         # text.get_texts()[0].set_text("frame: " + str(frame))
         # clear lines
-        global line_path
-        if len(lines) > 0:
-            for l in lines[-1]:
+        if len(lines1) > 0:
+            for l in lines1[-1]:
+                l.remove()
+        if len(lines2) > 0:
+            for l in lines2[-1]:
                 l.remove()
         # update path
         path= []
@@ -227,16 +234,21 @@ def draw_animation(history, instance, iterations):
         for x, y in path:
             X.append(x)
             Y.append(y)
-        line_path = ax.plot(X,Y, color = "black", zorder=-1)
-        lines.append(line_path)
+        line_path = ax1.plot(X,Y, color = "black", zorder=-1)
+        line_cost = ax2.plot([frame, frame],[0, sol.cost], color = "red", label = f"iteration{frame}" ) 
+        lines2.append(line_cost)
+        lines1.append(line_path)
         htext = hlegend.get_texts()[0]
-        label_i = f"cost: {sol.cost}\nframe: {frame}"
+        label_i = f"cost: {sol.cost:.2f}\niteration: {frame}"
         htext.set_text(label_i)
-        return line_path, htext
+        # return line_path , htext
 
 
-    time_per_frame = int(iterations / 30000)
-    ani = animation.FuncAnimation(fig=fig, func=update, frames=len(history), interval=time_per_frame)
+    ani = animation.FuncAnimation(fig=fig, func=update, frames=int(len(history)/10), interval=1)
+    f = r"animation.gif" 
+    writergif = animation.PillowWriter(fps=30) 
+    ani.save(f, writer=writergif)
+
     plt.show()
 
 
