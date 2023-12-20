@@ -1,6 +1,6 @@
 farmers 3
 clients 4
-capacity 20
+capacity 200
 locationCost 100
 costPerKm 3.5
 nbOfDates 1

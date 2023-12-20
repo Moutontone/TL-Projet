@@ -21,6 +21,7 @@ class Instance():
         self.day = k
         self.demandSumsFarmer = [0 for i in self.farmers]
         self.demandSumsClient = [0 for i in self.clients]
+        self.demandsFarmersClients = []
         self.clientPredecesors = {}
         self.farmerSuccessors = {}
         for i in self.farmers:
@@ -28,6 +29,7 @@ class Instance():
                 self.demandSumsFarmer[i-1] += self.demands[self.day][k-self.nbFarmers-1][i-1]
                 self.demandSumsClient[k-self.nbFarmers-1] += self.demands[self.day][k-self.nbFarmers-1][i-1]
                 if self.demands[self.day][k-self.nbFarmers-1][i-1]>0:
+                    self.demandsFarmersClients.append([i,k])
                     if k not in self.clientPredecesors.keys():
                         self.clientPredecesors[k] = [i]
                     else:
