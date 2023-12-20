@@ -1,4 +1,4 @@
-import fileReader as fr
+import python.fileReader as fr
 
 class Instance():
     def __init__(self, datapath) -> None:
@@ -58,3 +58,6 @@ class Instance():
     
     def farmerSuccessors(self, i):
         return self.farmerSuccessors[i]
+    
+    def getCoordinates(self):
+        return [(self.coordinates[x][0],self.coordinates[x][1]) for x in self.farmers], [(self.coordinates[x][0],self.coordinates[x][1]) for x in self.clients], (self.coordinates[0][0], self.coordinates[0][1])
