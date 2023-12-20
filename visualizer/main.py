@@ -58,9 +58,9 @@ def plot_path(path, ax, color):
         dy = (Y[i - 1] + Y[i])/2 - y
         plt.arrow(x, y, dx, dy, shape='full', lw=0, color = color, length_includes_head=True, head_width=.15)
 
-fig, ax = plt.subplots()
 
 def main():
+    fig, ax = plt.subplots()
     plot_path(path_farmer, ax, "black")
     plot_path(path_client, ax, "blue")
     plot_locations(F, C, ax)
