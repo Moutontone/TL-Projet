@@ -198,14 +198,22 @@ def draw_path(sol, instance):
     plt.axis('off')
     plt.show()
 
-def draw_animation(history, instance):
+def draw_animation(history, instance, iterations):
     F, C, D = instance.getCoordinates()
     fig, ax = plt.subplots()
     viz.plot_locations(F, C, D, ax)
+    plt.plot([], [], label = "init")
+    hlegend = ax.legend(loc='upper right')
+
+    # update path
+    X, Y = [], []
+    line_path = ax.plot(X,Y, color = "black", zorder=-1, label = "init0")
 
     lines = []
     def update(frame):
         sol = history[frame]
+        # update legend
+        # text.get_texts()[0].set_text("frame: " + str(frame))
         # clear lines
         global line_path
         if len(lines) > 0:
@@ -221,10 +229,14 @@ def draw_animation(history, instance):
             Y.append(y)
         line_path = ax.plot(X,Y, color = "black", zorder=-1)
         lines.append(line_path)
-        return line_path
+        htext = hlegend.get_texts()[0]
+        label_i = f"cost: {sol.cost}\nframe: {frame}"
+        htext.set_text(label_i)
+        return line_path, htext
 
 
-    ani = animation.FuncAnimation(fig=fig, func=update, frames=len(history), interval=25)
+    time_per_frame = int(iterations / 30000)
+    ani = animation.FuncAnimation(fig=fig, func=update, frames=len(history), interval=time_per_frame)
     plt.show()
 
 
@@ -243,7 +255,7 @@ if __name__ == "__main__":
     # plot
     # draw_path(sol,inst)
     print("start annimation")
-    draw_animation(history, inst)
+    draw_animation(history, inst, max_iterations)
     exit()
     Ys = values
     plt.plot(Ys)
