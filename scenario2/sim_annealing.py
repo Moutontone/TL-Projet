@@ -247,7 +247,7 @@ def draw_animation(history, instance, iterations):
     ani = animation.FuncAnimation(fig=fig, func=update, frames=int(len(history)/10), interval=1)
     f = r"animation.gif" 
     writergif = animation.PillowWriter(fps=30) 
-    ani.save(f, writer=writergif)
+    # ani.save(f, writer=writergif)
 
     plt.show()
 

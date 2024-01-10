@@ -8,7 +8,7 @@ def proba_accept(T, cost_candidate, cost_sol):
     return exp((cost_sol - cost_candidate) / T)
 
 def cooling_naive(t):
-    return t * 0.98
+    return t * 0.999
 
 def simulated_annealing(solution_initial, max_iteration, temperature_initial, proba_fn = proba_accept, cooling_fn = cooling_naive):
     """
