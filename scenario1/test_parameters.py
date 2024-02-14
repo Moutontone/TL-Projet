@@ -3,46 +3,45 @@ import sys
 sys.path.append(os.path.dirname(sys.path[0]))
 from python.instance import Instance
 import python.annealing as sim
-import matplotlib.pyplot as plt
 import random as rdm
-import visualizer.main as viz
 from sim_annealing import *
 import itertools
 
 NB_INST = 3
-NB_REP = 1
+NB_REP = 3
 
-def test(proba_init, mult_epoch, inst):
+def test(proba_init, mult_epoch, proba_last, inst):
 
-    # print(f"start test with parameters :\np1: {proba_init}, mult_epoch: {mult_epoch}")
-    average_best = 0
+    res = []
     for _ in range(NB_INST):
         sol = Solution_Farmers(inst)
         sol.initialize()
         for _ in range(NB_REP):
-            nb_iterations, temperature_initial, cooling_rate = sim.generate_parameters(sol.copy(), proba_init, mult_epoch)
-            # print(f"nb_iterations: {nb_iterations}, temperature_initial: {temperature_initial}, cooling_rate: {cooling_rate}")
-            history = sim.simulated_annealing(sol.copy(), nb_iterations, temperature_initial, cooling_rate)
-            # print(f"best : {history[-1].cost}")
-            average_best += history[-1].cost
+            history = sim.simulated_annealing(sol.copy(), proba_init, mult_epoch, proba_last)
+            res.append(history[-1].cost)
 
-
-    return average_best/(NB_REP * NB_INST)
+    avg = sum(res)/len(res)
+    var = sum([(x - avg)**2 for x in res])/(len(res)-1)
+    return avg, var
 
 if __name__ == "__main__":
     rdm.seed()
     inst = Instance("data")
-    epoch_mul = [1000, 5000, 10_000]
-    proba_ini = [0.99, 0.4, 0.6, 0.8, 0.9]
-    best = -1
+    epoch_mul = [1000, 10000]
+    proba_ini = [0.2, 0.3, 0.4]
+    proba_last = [0.0001]
+    bestAvg = -1
     bestZ = 0
-    for z in itertools.product(epoch_mul, proba_ini):
+    bestVar = 0
+    for z in itertools.product(epoch_mul, proba_ini, proba_last):
         print(f"start test {z}")
-        e, p1 = z
-        avg = test(0.9, 1000, inst)
-        print(f"avg: {avg}")
-        if best == -1 or avg < best:
-            best = avg
+        e, p1, pl = z
+        avg, var = test(p1, e, pl, inst)
+        print(f"avg: {avg:.2f},\t var: {var:.2f}")
+        print()
+        if bestAvg == -1 or avg < bestAvg:
+            bestAvg = avg
             bestZ = z
-    print(f"best -> {bestZ}: {best}")
+            bestVar = var
+    print(f"best {bestZ} -> avg: {bestAvg}, var: {bestVar}")
 

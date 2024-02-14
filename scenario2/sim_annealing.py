@@ -199,6 +199,7 @@ def draw_path(sol, instance):
     plt.show()
 
 def draw_animation(history, instance, iterations):
+    speed = 100
     F, C, D = instance.getCoordinates()
     fig, (ax1, ax2) = plt.subplots(2)
     viz.plot_locations(F, C, D, ax1)
@@ -215,7 +216,7 @@ def draw_animation(history, instance, iterations):
     lines1 = []
     lines2 = []
     def update(frame):
-        frame = min(frame*10, len(history)-1)
+        frame = min(frame*speed, len(history)-1)
         sol = history[frame]
         # update legend
         # text.get_texts()[0].set_text("frame: " + str(frame))
@@ -244,7 +245,7 @@ def draw_animation(history, instance, iterations):
         # return line_path , htext
 
 
-    ani = animation.FuncAnimation(fig=fig, func=update, frames=int(len(history)/10), interval=1)
+    ani = animation.FuncAnimation(fig=fig, func=update, frames=int(len(history)/speed), interval=1)
     f = r"animation.gif" 
     writergif = animation.PillowWriter(fps=30) 
     # ani.save(f, writer=writergif)
@@ -255,21 +256,27 @@ def draw_animation(history, instance, iterations):
 if __name__ == "__main__":
     rdm.seed()
     inst = Instance("data")
-    inst = Instance("smalldata")
+    # inst = Instance("smalldata")
+    # inst = Instance("toydata")
     sol = Solution_general(inst)
     sol.initialize()
-    max_iterations = 10_000
-    t0 = 1000
-    history = sim.simulated_annealing(sol, max_iterations, t0)
-    sol = history[-1]
-    values = [s.cost for s in history]
+    sol_init = sol.copy()
 
-    # plot
-    # draw_path(sol,inst)
-    print("start annimation")
-    draw_animation(history, inst, max_iterations)
-    exit()
-    Ys = values
-    plt.plot(Ys)
-    plt.ylim(0, max(Ys) * 1.1)
-    plt.show()
+    mult_epoch = 10
+    pi = 0.4
+    pl = 0.0001
+
+    for day in range(1): # range(207) days
+        print(f"day: {day}")
+
+        # history = sim.simulated_annealing_alg(sol, max_iterations, t0, 0.99)
+        history = sim.simulated_annealing(sol, pi, mult_epoch, pl)
+        best = history[-1].cost
+
+        print(f"solution: {best}")
+
+        # plot
+        # draw_path(sol,inst)
+        print("start annimation")
+        draw_animation(history, inst, len(history))
+        print("end annimation")

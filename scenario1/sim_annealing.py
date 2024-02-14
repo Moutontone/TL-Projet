@@ -79,7 +79,7 @@ class Solution_Farmers():
        self.inst = inst
 
     def initialize(self) -> None:
-        self.sol = [k for k in inst.farmers]
+        self.sol = [k for k in self.inst.farmers]
         rdm.shuffle(self.sol)
         self.evaluate()
 
@@ -148,7 +148,7 @@ class Solution_Farmers():
     def __str__(self) -> str:
         return str(self.cost) + " " + self.sol.__str__() 
 
-def draw_path(solF, solC, instance):
+def draw_path(solF, solC, instance, valuesF, valuesC):
 
     F, C, D = instance.getCoordinates()
 
@@ -165,6 +165,7 @@ def draw_path(solF, solC, instance):
     # plot farmer path
     ax = ax1
     viz.plot_locations(F, [], D, ax)
+    ax.legend()
 
     tour = [D]
     count_tour = 0
@@ -172,13 +173,15 @@ def draw_path(solF, solC, instance):
         tour.append(location)
         if location == D:
             # print tour
-            viz.plot_path(tour, ax, colors_tours[count_tour])
+            # viz.plot_path(tour, ax, colors_tours[count_tour])
+            viz.plot_path(tour, ax, "black")
             count_tour += 1
             tour = [D]
 
     # plot client path
     ax = ax2
     viz.plot_locations([], C, D, ax)
+    ax.legend()
 
     tour = [D]
     count_tour = 0
@@ -186,53 +189,60 @@ def draw_path(solF, solC, instance):
         tour.append(location)
         if location == D:
             # print tour
-            viz.plot_path(tour, ax, colors_tours[count_tour])
+            viz.plot_path(tour, ax,  "black")
             count_tour += 1
             tour = [D]
 
     # plot both path
     ax = ax3
     viz.plot_locations(F, C, D, ax)
+    ax.legend()
 
     viz.plot_path(path_farmer, ax, "red")
-    viz.plot_path(path_client, ax, "blue")
+    viz.plot_path(path_client, ax, "green")
+
+    # plot evolution
+    ax = ax4
+
+    Ys = [valuesF[i] + valuesC[i] for i in range(len(valuesF))]
+    ax.plot(Ys, color = "black")
+    # plt.ylim(0, max(valuesF + valuesC) * 1.1)
     ###
 
-    plt.axis('off')
+    # plt.axis('off')
     plt.show()
 
 if __name__ == "__main__":
     rdm.seed()
     inst = Instance("data")
-    # inst = Instance("smalldata")
 
-    # find best solution for farmers
-    sol = Solution_Farmers(inst)
-    sol.initialize()
-    max_iterations = 10000
-    t0 = 9000
-    print(f"find best route for Farmers using simulated annealing...")
-    history = sim.simulated_annealing(sol, max_iterations, t0)
-    valuesF = [s.cost for s in history]
-    best_solF = history[-1]
-    print(f"found route of cost: {valuesF[-1]}")
+    mult_epoch = 1000
+    pi = 0.2
+    pl = 0.0001
 
-    # find best solution for client
-    sol = Solution_Client(inst)
-    sol.initialize()
-    max_iterations = 10000
-    t0 = 9000
-    print(f"find best route for Client using simulated annealing...")
-    history = sim.simulated_annealing(sol, max_iterations, t0)
-    valuesC = [s.cost for s in history]
-    best_solC = history[-1]
-    print(f"found route of cost: {valuesC[-1]}")
+    for day in range(208):
+        print(f"day: {day}")
 
-    # plot
-    draw_path(best_solF, best_solC, inst)
+        inst = Instance("data")
+        inst.set_day(day)
+        solF = Solution_Farmers(inst)
+        solF.initialize()
+        history = sim.simulated_annealing(solF, pi, mult_epoch, pl)
+        bestF = history[-1].cost
 
-    Ys = valuesF
-    plt.plot(Ys)
-    Ys = valuesC
-    plt.plot(Ys)
-    plt.ylim(0, max(valuesF + valuesC) * 1.1)
+        solC = Solution_Client(inst)
+        solC.initialize()
+        history = sim.simulated_annealing(solC, pi, mult_epoch, pl)
+        bestC = history[-1].cost
+
+        print(f"solution: {bestF + bestC}")
+
+
+#     draw_path(best_solF, best_solC, inst, valuesF, valuesC)
+# 
+#     Ys = valuesF
+#     plt.plot(Ys)
+#     Ys = valuesC
+#     plt.plot(Ys)
+#     plt.ylim(0, max(valuesF + valuesC) * 1.1)
+#     plt.show()

@@ -26,21 +26,23 @@ color_clients = "green"
 
 def plot_locations(farmers, clients, depot, ax):
     # plot Depot
-    ax.scatter(depot[0],depot[1], marker = mark_depot, color = color_depot, sizes=[size_depot])
+    ax.scatter(depot[0],depot[1], marker = mark_depot, color = color_depot, sizes=[size_depot], label = "Depot")
 
     # plot Farmers
     X, Y = [], []
     for fx, fy in farmers:
         X.append(fx)
         Y.append(fy)
-    ax.scatter(X,Y, marker = mark_farmers, color = color_farmers, sizes=[size]*len(X))
+    if X != []:
+        ax.scatter(X,Y, marker = mark_farmers, color = color_farmers, sizes=[size]*len(X), label = "Farmers")
 
     # plot Client
     X, Y = [], []
     for fx, fy in clients:
         X.append(fx)
         Y.append(fy)
-    ax.scatter(X,Y, marker = mark_clients, color = color_clients, sizes=[size]*len(X))
+    if X != []:
+        ax.scatter(X,Y, marker = mark_clients, color = color_clients, sizes=[size]*len(X), label = "Clients")
 
     return ax
 

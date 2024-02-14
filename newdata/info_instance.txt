@@ -1,0 +1,6 @@
+farmers 40
+clients 50
+capacity 9000
+locationCost 1000
+costPerKm 3.5
+nbOfDates 1

@@ -13,9 +13,9 @@ class Instance():
         # self.tours = [t for t in range(self.nbFarmers)]
         self.relevant = [i for i in range(self.nbFarmers+1)]
         self.demands = self.demands[1:]#first line is empty
-        self.day(0)
+        self.set_day(0)
 
-    def day(self, c):
+    def set_day(self, c):
         self.day = c
         self.demandSumsFarmer = [0 for _ in self.farmers]
         self.demandSumsClient = [0 for _ in self.clients]
